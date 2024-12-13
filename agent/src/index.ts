@@ -3,58 +3,57 @@ import { SqliteDatabaseAdapter } from "@ai16z/adapter-sqlite";
 import { AutoClientInterface } from "@ai16z/client-auto";
 import { DirectClientInterface } from "@ai16z/client-direct";
 import { DiscordClientInterface } from "@ai16z/client-discord";
+import { FarcasterAgentClient } from "@ai16z/client-farcaster";
 import { TelegramClientInterface } from "@ai16z/client-telegram";
 import { TwitterClientInterface } from "@ai16z/client-twitter";
-import { FarcasterAgentClient } from "@ai16z/client-farcaster";
 import {
     AgentRuntime,
     CacheManager,
-    Character,
-    Clients,
+    type Character,
     DbCacheAdapter,
     FsCacheAdapter,
-    IAgentRuntime,
-    ICacheManager,
-    IDatabaseAdapter,
-    IDatabaseCacheAdapter,
+    type IAgentRuntime,
+    type ICacheManager,
+    type IDatabaseAdapter,
+    type IDatabaseCacheAdapter,
     ModelProviderName,
-    defaultCharacter,
     elizaLogger,
     settings,
     stringToUuid,
-    validateCharacterConfig,
+    validateCharacterConfig
 } from "@ai16z/eliza";
 import { zgPlugin } from "@ai16z/plugin-0g";
-import createGoatPlugin from "@ai16z/plugin-goat";
+import { aptosPlugin } from "@ai16z/plugin-aptos";
 import { bootstrapPlugin } from "@ai16z/plugin-bootstrap";
-// import { intifacePlugin } from "@ai16z/plugin-intiface";
-import {
-    coinbaseCommercePlugin,
-    coinbaseMassPaymentsPlugin,
-    tradePlugin,
-    tokenContractPlugin,
-    webhookPlugin,
-    advancedTradePlugin,
-} from "@ai16z/plugin-coinbase";
-import { confluxPlugin } from "@ai16z/plugin-conflux";
-import { imageGenerationPlugin } from "@ai16z/plugin-image-generation";
-import { evmPlugin } from "@ai16z/plugin-evm";
-import { createNodePlugin } from "@ai16z/plugin-node";
-import { solanaPlugin } from "@ai16z/plugin-solana";
-import { teePlugin, TEEMode } from "@ai16z/plugin-tee";
-import { aptosPlugin, TransferAptosToken } from "@ai16z/plugin-aptos";
-import { flowPlugin } from "@ai16z/plugin-flow";
-import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
 import readline from "readline";
 import { fileURLToPath } from "url";
+// import { intifacePlugin } from "@ai16z/plugin-intiface";
+import {
+    advancedTradePlugin,
+    coinbaseCommercePlugin,
+    coinbaseMassPaymentsPlugin,
+    tokenContractPlugin,
+    tradePlugin,
+    webhookPlugin,
+} from "@ai16z/plugin-coinbase";
+import { confluxPlugin } from "@ai16z/plugin-conflux";
+import { evmPlugin } from "@ai16z/plugin-evm";
+import { flowPlugin } from "@ai16z/plugin-flow";
+import createGoatPlugin from "@ai16z/plugin-goat";
+import { imageGenerationPlugin } from "@ai16z/plugin-image-generation";
+import { createNodePlugin } from "@ai16z/plugin-node";
+import { solanaPlugin } from "@ai16z/plugin-solana";
+import { TEEMode, teePlugin } from "@ai16z/plugin-tee";
+import Database from "better-sqlite3";
 import yargs from "yargs";
+import { character } from "./character.ts";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 
-export const wait = (minTime: number = 1000, maxTime: number = 3000) => {
+export const wait = (minTime = 1000, maxTime = 3000) => {
     const waitTime =
         Math.floor(Math.random() * (maxTime - minTime + 1)) + minTime;
     return new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -103,7 +102,7 @@ function isAllStrings(arr: unknown[]): boolean {
 export async function loadCharacters(
     charactersArg: string
 ): Promise<Character[]> {
-    let characterPaths = charactersArg
+    const characterPaths = charactersArg
         ?.split(",")
         .map((filePath) => filePath.trim());
     const loadedCharacters = [];
@@ -192,7 +191,7 @@ export async function loadCharacters(
 
     if (loadedCharacters.length === 0) {
         elizaLogger.info("No characters found, using default character");
-        loadedCharacters.push(defaultCharacter);
+        loadedCharacters.push(character);
     }
 
     return loadedCharacters;
@@ -540,9 +539,9 @@ const startAgents = async () => {
     const directClient = await DirectClientInterface.start();
     const args = parseArguments();
 
-    let charactersArg = args.characters || args.character;
+    const charactersArg = args.characters || args.character;
 
-    let characters = [defaultCharacter];
+    let characters = [character];
 
     if (charactersArg) {
         characters = await loadCharacters(charactersArg);
@@ -588,7 +587,7 @@ async function handleUserInput(input, agentId) {
     }
 
     try {
-        const serverPort = parseInt(settings.SERVER_PORT || "3000");
+        const serverPort = Number.parseInt(settings.SERVER_PORT || "3000");
 
         const response = await fetch(
             `http://localhost:${serverPort}/${agentId}/message`,
