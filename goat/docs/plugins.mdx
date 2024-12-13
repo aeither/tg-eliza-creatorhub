@@ -1,0 +1,164 @@
+---
+title: Plugins
+---
+
+GOAT plugins are extensions that enable your agent to interact with various blockchain protocols. 
+
+Instead of having a generic function to execute arbitrary transactions, plugins provide specific tools for common protocols to **reduce the risk of hallucinations**.
+
+## Key Benefits
+- **Modularity**: Easily add or remove functionalities.
+- **Reusability**: Leverage community-built plugins.
+- **Customization**: Design plugins to meet the unique needs.
+
+----
+
+## Chain Compatibility
+Plugins can be EVM/Solana specific or chain-agnostic. If a plugin is chain-specific it will fail to compile when being used with a wallet of a different chain.
+
+See all available plugins [here](/chains-wallets-plugins#plugins).
+
+----
+
+## Plugin Architecture
+Plugins implement the `Plugin` interface defined in the [core package](https://github.com/goat-sdk/goat/tree/main/typescript/packages/core/src/plugins/plugins.ts):
+
+```typescript
+/**
+ * Plugin interface that can be chain-specific or chain-agnostic.
+ * Defaults to WalletClient for chain-agnostic plugins.
+ *
+ * @param TWalletClient - The type of wallet client to support. Defaults to WalletClient for chain-agnostic plugins.
+ * @param name - The name of the plugin.
+ * @param supportsChain - A function that returns true if the plugin supports the given chain.
+ * @param supportsSmartWallets - A function that returns true if the plugin supports smart wallets.
+ * @param getTools - A function that returns the tools provided by the plugin.
+ */
+export interface Plugin<TWalletClient extends WalletClient = WalletClient> {
+    name: string; // send_eth
+    supportsChain: (chain: Chain) => boolean;
+    supportsSmartWallets: () => boolean;
+    getTools: (
+        chain: ChainForWalletClient<TWalletClient>
+    ) => Promise<DeferredTool<TWalletClient>[]>;
+}
+```
+
+Plugins get passed a [WalletClient](https://github.com/goat-sdk/goat/tree/main/typescript/packages/core/src/wallets/core.ts) interface that can be EVM/Solana specific or chain-agnostic.
+
+The WalletClient abstracts the underlying wallet implementation and provides a common interface to:
+1. Get wallet information
+2. Sign messages
+3. Send transactions
+
+This allows plugins to:
+1. Work with any wallet implementation that implements the WalletClient interface, from key pairs to smart wallets.
+2. Focus on the specific communication with the protocol without worrying about handling transactions, message signing, etc. for each wallet implementation.
+
+----
+
+## Creating your own GOAT plugin
+Building a custom GOAT plugin is straightforward. Below, we'll walk you through creating a plugin that signs messages with "BAAAA" 🐐 prefixed to them.
+
+<Steps>
+  <Step title="Define the plugin interface">
+  Start by defining your plugin using the [Plugin](https://github.com/goat-sdk/goat/tree/main/typescript/packages/core/src/plugins/plugins.ts) interface.
+
+  Since we are just signing messages, we will create a chain-agnostic plugin that works both on EVM and Solana chains.
+
+```typescript
+import type { Plugin, WalletClient, Chain } from '@goat-sdk/core';
+
+function baaaSigner(): Plugin<WalletClient> { // We use the WalletClient interface for chain-agnostic plugins
+    return {
+        name: "Sign Message with BAAAA",
+        supportsChain: (chain: Chain) => ["evm", "solana"].includes(chain.type),
+        supportsSmartWallets: () => true,
+        getTools: async () => {
+            return [];
+        },
+    };
+}
+```
+  </Step>
+  <Step title="Add tools to the plugin">
+    The `getTools` method returns an array of DeferredTools that will be added to the agent.
+
+    DeferredTools have the following interface:
+    <Note>
+    It's important to note that the description uses `{{tool}}` to refer to the tool name. This is a placeholder gets replaced by the words action or tool depending on the adapter being used.
+    </Note>
+    ```typescript
+    import { z } from "zod";
+    import type { WalletClient } from "@goat-sdk/core";
+
+    /**
+     * Deferred tools defer which wallet client to be passed to the method until the tool is called.
+     */
+    export type DeferredTool<TWalletClient extends WalletClient> = {
+        name: string; // Send ETH
+        description: string; // This {{tool}} sends ETH to an address.
+        parameters: z.ZodSchema; // { to: z.string(), amount: z.string() }
+        method: (
+            walletClient: TWalletClient,
+            parameters: z.infer<z.ZodSchema>
+        ) => string | Promise<string>;
+    };
+    ```
+
+    For our example, we will create a tool that signs a message with "BAAAA" 🐐 prefixed to it.
+
+    ```typescript
+    import { z } from "zod";
+    import type { Plugin, WalletClient, Chain } from "@goat-sdk/core";
+
+    export function signMessagePlugin(): Plugin<WalletClient> {
+        return {
+            name: "Sign Message with BAAAA",
+            supportsChain: (chain: Chain) => ["evm", "solana"].includes(chain.type),
+            supportsSmartWallets: () => true,
+            getTools: async (walletClient: WalletClient) => {
+                return [
+                    {
+                        name: "sign_message_baaaa",
+                        description: "This {{tool}} signs a message with 'BAAAA' prefix",
+                        parameters: z.object({
+                            message: z.string(),
+                        }),
+                        method: async (parameters) => {
+                            const originalMessage: string = parameters.message;
+                            const prefixedMessage = `BAAAA${originalMessage}`;
+                            const signed = await walletClient.signMessage(prefixedMessage);
+                            return signed.signedMessage;
+                        },
+                    },
+                ];
+            },
+        };
+    }
+    ```
+  </Step>
+  <Step title="Add the plugin to the agent">
+
+    ```typescript
+import { getOnChainTools } from '@goat-sdk/adapter-vercel-ai';
+import { signMessagePlugin } from './your-plugin-path/signMessagePlugin'; // Path to your plugin
+
+const wallet = /* Initialize your wallet client */;
+
+const tools = getOnChainTools({
+    wallet: viem(wallet), // or smartwallet(wallet), solana(wallet), etc.
+    plugins: [
+        signMessagePlugin(),
+        // ...other plugins
+    ],
+});
+
+// Prompt: Sign the message "Go out and eat grass 🐐"
+    ```
+  </Step>    
+</Steps>
+
+### Next steps
+- Share your plugin with others!
+- Open a PR to add it to the [plugins registry](https://github.com/goat-sdk/goat/tree/main/typescript/packages/plugins) in the [GOAT SDK](https://github.com/goat-sdk/goat).

@@ -1,0 +1,31 @@
+{
+    "name": "conversational-agent",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@11labs/react": "^0.0.4",
+        "@goat-sdk/adapter-eleven-labs": "workspace:*",
+        "@goat-sdk/core": "workspace:*",
+        "@goat-sdk/wallet-viem": "workspace:*",
+        "@goat-sdk/plugin-coingecko": "workspace:*",
+        "@tanstack/react-query": "^5.62.2",
+        "connectkit": "^1.8.2",
+        "next": "15.0.3",
+        "react": "19.0.0-rc-66855b96-20241106",
+        "react-dom": "19.0.0-rc-66855b96-20241106",
+        "viem": "^2.21.49",
+        "wagmi": "^2.13.3"
+    },
+    "devDependencies": {
+        "@types/react": "^18",
+        "@types/react-dom": "^18",
+        "postcss": "^8",
+        "tailwindcss": "^3.4.1"
+    }
+}
