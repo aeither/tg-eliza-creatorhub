@@ -1,4 +1,4 @@
-import { type Character, ModelProviderName, defaultCharacter, } from "@ai16z/eliza";
+import { type Character, Clients, ModelProviderName, defaultCharacter, } from "@ai16z/eliza";
 
 // import { imageGenerationPlugin } from "@ai16z/plugin-image-generation";
 // import { solanaPlugin } from "@ai16z/plugin-solana";
@@ -9,8 +9,8 @@ export const character: Character = {
     ...defaultCharacter,
     name: "Eliza",
     plugins: [],
-    clients: [], // Clients.TELEGRAM
-    modelProvider: ModelProviderName.OPENAI,
+    clients: [Clients.TELEGRAM], // Clients.TELEGRAM
+    modelProvider: ModelProviderName.GAIANET,
     settings: {
         secrets: {
             EVM_PRIVATE_KEY: process.env.EVM_PRIVATE_KEY,
