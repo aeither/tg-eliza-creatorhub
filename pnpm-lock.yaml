@@ -1015,12 +1015,18 @@ importers:
       '@goat-sdk/core':
         specifier: 0.3.8
         version: 0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)
+      '@goat-sdk/plugin-coingecko':
+        specifier: ^0.1.4
+        version: 0.1.4(@goat-sdk/core@0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10))(viem@2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       '@goat-sdk/plugin-erc20':
         specifier: 0.1.7
         version: 0.1.7(@goat-sdk/core@0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10))(viem@2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       '@goat-sdk/wallet-viem':
         specifier: 0.1.3
         version: 0.1.3(@goat-sdk/core@0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10))(viem@2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
+      goat-plugin-creatorhub:
+        specifier: ^0.1.1
+        version: 0.1.1(@goat-sdk/core@0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10))(viem@2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       tsup:
         specifier: 8.3.5
         version: 8.3.5(@swc/core@1.10.1(@swc/helpers@0.5.15))(jiti@2.4.0)(postcss@8.4.49)(typescript@5.6.3)(yaml@2.6.1)
@@ -3902,6 +3908,12 @@ packages:
   '@goat-sdk/core@0.3.8':
     resolution: {integrity: sha512-1H8Cziyjj3bN78M4GETGN8+/fAQhtTPqMowSyAgIZtC/MGWvf41H2SR0FNba/xhfCOALhb0UfhGOsXCswvM5iA==}
     engines: {node: '>=20.12.2 <21', npm: please-use-pnpm, pnpm: '>=9', yarn: please-use-pnpm}
+
+  '@goat-sdk/plugin-coingecko@0.1.4':
+    resolution: {integrity: sha512-i85v/SeCXB7/fcqZKc0hV68/3FrUAHJSL4N5AUp5OPauzV5kq4Ecn0WjeDZEHX8iCEEY1NZSZ47yweDckAhjhA==}
+    peerDependencies:
+      '@goat-sdk/core': 0.3.14
+      viem: 2.21.49
 
   '@goat-sdk/plugin-erc20@0.1.7':
     resolution: {integrity: sha512-UDd6pXIBmpCWW7QIFxM5rJPta4tWqkys8P1sAt1kqabAndx+GaczhNUPwSdV1MH77BNtcyGZ6+HoeirskiV//Q==}
@@ -10290,6 +10302,12 @@ packages:
   globby@14.0.2:
     resolution: {integrity: sha512-s3Fq41ZVh7vbbe2PN3nrW7yC7U7MFVc5c98/iTl9c2GawNMKx/J648KQRW6WKkuU8GIbbh2IXfIRQjOZnXcTnw==}
     engines: {node: '>=18'}
+
+  goat-plugin-creatorhub@0.1.1:
+    resolution: {integrity: sha512-wbQmZ0csJoZX61mbgD7BlvPdC5AhKhI/0/+nkEsHOv7x2EpNuzEq1ESx63EcF2idFhus2rUd9AZeD6NN/ZIF7A==}
+    peerDependencies:
+      '@goat-sdk/core': workspace:*
+      viem: ^2.21.49
 
   google-auth-library@9.15.0:
     resolution: {integrity: sha512-7ccSEJFDFO7exFbO6NRyC+xH8/mZ1GZGG2xxx9iHxZWcjUjJpjWxIMw3cofAKcueZ6DATiukmmprD7yavQHOyQ==}
@@ -20704,6 +20722,12 @@ snapshots:
       - typescript
       - utf-8-validate
 
+  '@goat-sdk/plugin-coingecko@0.1.4(@goat-sdk/core@0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10))(viem@2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))':
+    dependencies:
+      '@goat-sdk/core': 0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)
+      viem: 2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)
+      zod: 3.23.8
+
   '@goat-sdk/plugin-erc20@0.1.7(@goat-sdk/core@0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10))(viem@2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))':
     dependencies:
       '@goat-sdk/core': 0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)
@@ -28260,7 +28284,7 @@ snapshots:
 
   extract-zip@2.0.1:
     dependencies:
-      debug: 4.3.4
+      debug: 4.4.0(supports-color@5.5.0)
       get-stream: 5.2.0
       yauzl: 2.10.0
     optionalDependencies:
@@ -28889,6 +28913,12 @@ snapshots:
       path-type: 5.0.0
       slash: 5.1.0
       unicorn-magic: 0.1.0
+
+  goat-plugin-creatorhub@0.1.1(@goat-sdk/core@0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10))(viem@2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)):
+    dependencies:
+      '@goat-sdk/core': 0.3.8(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)
+      viem: 2.21.53(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)
+      zod: 3.23.8
 
   google-auth-library@9.15.0(encoding@0.1.13):
     dependencies:
