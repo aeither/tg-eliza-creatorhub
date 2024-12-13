@@ -1,3 +1,6 @@
+Config
+https://x.com/MurrLincoln/status/1866894077800673430
+
 All Coinbase trades and transfers automatically donate 1% of the transaction amount to charity. Currently, the charity addresses are hardcoded based on the network used for the transaction, with the current charity being supported as X.
 
 The charity addresses for each network are as follows:
